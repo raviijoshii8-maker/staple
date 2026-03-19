@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>staple · thread & bolt</title>
+  <!-- tailwind + rubik -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300..600&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Rubik', system-ui, sans-serif; }
+    body {
+      background: #ece4d7;
+      color: #2f3f35;
+      margin: 0;
+    }
+    .cloth-showroom {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 2.5rem;
+    }
+    .cloth-card {
+      background: #fdf9f2;
+      border: 2px solid #b5977a;
+      border-radius: 200px 20px 200px 20px;
+      padding: 2.2rem 2.5rem;
+      box-shadow: 0 30px 35px -25px #6f675b, inset 0 -2px 0 #dacbb8;
+      transition: 0.2s;
+      margin: 2.5rem 0;
+    }
+    .cloth-card:hover {
+      box-shadow: 0 35px 40px -22px #5a4f43, inset 0 -4px 0 #c9b59e;
+    }
+    h2 {
+      font-size: 2.8rem;
+      font-weight: 350;
+      color: #4b3f2e;
+      background: #e5d9cc;
+      display: inline-block;
+      padding: 0.4rem 2.8rem 0.4rem 2rem;
+      border-radius: 0 70px 70px 0;
+      letter-spacing: -0.02em;
+      border-left: 10px solid #ae8d72;
+      margin: 2.5rem 0 1.5rem 0;
+      box-shadow: 4px 6px 0 #9e8269;
+    }
+    h3 {
+      font-size: 2rem;
+      font-weight: 400;
+      color: #645a4b;
+      border-bottom: 5px double #b2906e;
+      display: inline-block;
+      padding-bottom: 0.3rem;
+      margin: 1.5rem 0 1rem;
+    }
+    .swatch-img {
+      border-radius: 150px 10px 150px 10px;
+      border: 6px solid #ece1d2;
+      outline: 3px solid #a58367;
+      box-shadow: 0 30px 30px -20px #3e4f42;
+      width: 100%;
+      max-height: 460px;
+      object-fit: cover;
+      margin: 2rem 0 0.8rem;
+    }
+    .img-tag {
+      text-align: left;
+      font-size: 0.9rem;
+      color: #7b6853;
+      margin-top: -0.5rem;
+      margin-bottom: 1.8rem;
+      font-style: italic;
+      border-left: 15px solid #cfa776;
+      padding-left: 1rem;
+    }
+    .thread-list {
+      list-style: none;
+      padding: 0;
+    }
+    .thread-list li {
+      padding: 0.6rem 0;
+      border-bottom: 2px dotted #d2beaa;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-weight: 380;
+    }
+    .thread-list li::before {
+      content: "🧵";
+      font-size: 1.2rem;
+      margin-right: 0.4rem;
+      opacity: 0.9;
+    }
+    .fabric-note {
+      background: #d9cfbf;
+      border-radius: 100px 10px 100px 10px;
+      padding: 1.5rem 2rem;
+      border: 3px solid #f0e1d0;
+      color: #38483b;
+      font-size: 1.1rem;
+      box-shadow: inset 0 0 0 3px #b09b85;
+    }
+    hr {
+      border: none;
+      height: 8px;
+      background: repeating-linear-gradient(90deg, #b49c83 0px, #b49c83 10px, #ecdacb 10px, #ecdacb 20px);
+      margin: 3rem 0;
+    }
+    /* NEW MODAL DESIGN – bolt & spool theme (clean, minimal, fabric label style) */
+    .modal-bolt {
+      background: #f2efe8;
+      border: 2px solid #b48b65;
+      border-radius: 40px 8px 40px 8px;
+      max-width: 600px;
+      padding: 3rem 3rem 2.8rem;
+      box-shadow: 20px 28px 0 #7f6a56, 0 30px 40px -20px #2a3f31;
+      position: relative;
+    }
+    .modal-bolt::before {
+      content: "";
+      position: absolute;
+      top: -12px; left: 30px;
+      width: 70px; height: 24px;
+      background: #dbbd9f;
+      border-radius: 40px 4px 40px 4px;
+      border: 2px solid #a18469;
+      box-shadow: inset 0 2px 3px rgba(255,250,235,0.7);
+    }
+    .modal-bolt::after {
+      content: "⚡ staple bolt";
+      position: absolute;
+      top: -28px; left: 40px;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #3b4a3a;
+      letter-spacing: 0.15em;
+      background: #ecdac7;
+      padding: 0.2rem 1.5rem;
+      border-radius: 100px 4px 100px 4px;
+      border: 2px solid #b88d66;
+    }
+    #overlayBolt {
+      background: rgba(60, 55, 45, 0.8);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+    }
+    .badge-count {
+      background: #c9ad91;
+      color: #1f2f24;
+      padding: 0.3rem 2rem;
+      border-radius: 60px 4px 60px 4px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+    }
+    .cloth-header {
+      width: 100vw;
+      position: relative;
+      left: 50%;
+      right: 50%;
+      margin-left: -50vw;
+      margin-right: -50vw;
+      background: #2f463b;
+      background-image: repeating-linear-gradient(30deg, #3b5b49 0px, #3b5b49 3px, #2e4b3a 3px, #2e4b3a 8px);
+      padding: 5rem 0;
+      border-bottom: 14px solid #b69877;
+      border-top: 10px solid #b69877;
+      text-align: center;
+    }
+  </style>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SBJZ7C7VV0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SBJZ7C7VV0');
+</script>
+
+</head>
+<body>
+
+<!-- REDESIGNED COOKIE OVERLAY – bolt & spool theme (new shape, new look) -->
+<div id="overlayBolt" class="fixed inset-0 z-50 flex items-center justify-center p-5" style="display: flex;">
+  <div class="modal-bolt">
+    <button id="closeBolt" class="absolute top-7 right-8 text-4xl text-stone-600 hover:text-stone-900 bg-stone-200/60 w-12 h-12 rounded-full flex items-center justify-center border-2 border-stone-400">✕</button>
+    <div class="flex flex-col items-center">
+      <span class="text-8xl block mb-3 drop-shadow-md">🧶🪡</span>
+      <h3 class="text-5xl font-light text-[#3d5a47] tracking-tight">staple goods</h3>
+      <div class="w-20 h-1 bg-[#c7a67b] my-5 rounded-full"></div>
+      <p class="text-2xl text-center text-stone-700 leading-relaxed">thread, bolts, and local knowledge.<br> step in to find what lasts.</p>
+      <div class="flex gap-6 mt-10">
+        <button id="boltAccept" class="bg-[#7e6f5b] hover:bg-[#635544] text-white px-12 py-4 rounded-full text-2xl border-4 border-[#efe3d5] shadow-md transition">enter</button>
+        <button id="boltDecline" class="bg-white hover:bg-stone-100 px-12 py-4 rounded-full text-2xl border-2 border-stone-400 text-stone-700">later</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const overlay = document.getElementById('overlayBolt');
+    const accept = document.getElementById('boltAccept');
+    const decline = document.getElementById('boltDecline');
+    const closeBtn = document.getElementById('closeBolt');
+    if (overlay) overlay.style.display = 'flex';
+    function removeOverlay() {
+      overlay.style.transition = 'opacity 0.25s';
+      overlay.style.opacity = '0';
+      setTimeout(() => { overlay.style.display = 'none'; }, 250);
+    }
+    if (accept) accept.addEventListener('click', removeOverlay);
+    if (decline) decline.addEventListener('click', removeOverlay);
+    if (closeBtn) closeBtn.addEventListener('click', removeOverlay);
+  })();
+</script>
+
+<!-- header – unchanged (staple branding) -->
+<div class="cloth-header">
+  <div class="cloth-showroom">
+    <p class="text-amber-100/80 text-2xl tracking-[.20em]">THREAD · BOLT · STAPLE</p>
+    <h1 class="text-8xl md:text-9xl font-black text-[#f5e9d8] drop-shadow-2xl">staple</h1>
+    <p class="text-3xl text-stone-200 max-w-3xl mx-auto mt-2">where to buy · what to ask · how to choose</p>
+  </div>
+</div>
+
+<main class="cloth-showroom pb-28">
+
+  <!-- intro textile note (same as before) -->
+  <div class="cloth-card mt-12">
+    <div class="flex items-center gap-5">
+      <span class="text-7xl">📏</span>
+      <p class="text-xl font-light">every bolt tells a story. here's how to read the label, feel the weight, and find the source.</p>
+    </div>
+  </div>
+
+  <!-- 1 · linen – same images as last version (kept new) -->
+  <section>
+    <h2>flax / linen</h2>
+    <img class="swatch-img" src="https://plus.unsplash.com/premium_photo-1722498541085-59c3e7d2274b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="natural linen fabric roll">
+    <div class="img-tag">Linen Hall · Belarusian flax, mid-weight</div>
+
+    <div class="cloth-card">
+      <span class="badge-count">thread count: 80–120</span>
+      <h3 class="mt-3">hand & structure</h3>
+      <ul class="thread-list">
+        <li>stones-washed linen gets softer – ask if pre-treated.</li>
+        <li>avoid "linen touch" – it's usually polyester.</li>
+        <li>fullness: holds shape, drapes without being clingy.</li>
+        <li>local: “Lyon” market Komaroŭski, linen row 3.</li>
+      </ul>
+      <div class="fabric-note mt-5">⚡ boil if you want extra shrinkage, then line dry.</div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 2 · wool -->
+  <section>
+    <h2>wool / fleece</h2>
+    <img class="swatch-img" src="https://images.unsplash.com/photo-1718995343476-73098cf9dfec?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="woven wool fabric on table">
+    <div class="img-tag">local mill · 100% virgin wool</div>
+
+    <div class="cloth-card">
+      <h3>assess before buy</h3>
+      <ul class="thread-list">
+        <li>pilling resistance: tightly twisted fibres last longer.</li>
+        <li>layering weight: 180–220 gsm for indoors.</li>
+        <li>superwash? loses some warmth but machine safe.</li>
+        <li>stall “Ceply kutočak” upper gallery, Kamaroŭski.</li>
+      </ul>
+      <div class="bg-[#cfc1b0] p-5 mt-6 rounded-[100px_10px_100px_10px]">storage: keep in cotton bag with lavender.</div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 3 · cotton -->
+  <section>
+    <h2>cotton · woven & jersey</h2>
+    <img class="swatch-img" src="https://images.unsplash.com/photo-1500241770736-a3f62bbc8717?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="colorful cotton prints">
+    <div class="img-tag">organic cotton / deadstock prints</div>
+
+    <div class="cloth-card">
+      <h3>dress / shirt fabric</h3>
+      <ul class="thread-list">
+        <li>end-on-end: subtle texture for shirting.</li>
+        <li>voile: lightweight, semi-sheer – good for summer.</li>
+        <li>shrinkage: sanforized labelled = less than 3%.</li>
+        <li>second‑hand gem: “Haspadar” Čyrvanona 12, big cotton table.</li>
+      </ul>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 4 · denim -->
+  <section>
+    <h2>denim · indigo</h2>
+    <img class="swatch-img" src="https://plus.unsplash.com/premium_photo-1756154062713-b53099eb34ee?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="selvedge denim rolls">
+    <div class="img-tag">Japanese selvedge · 14.5 oz</div>
+
+    <div class="cloth-card">
+      <h3>what to look for</h3>
+      <ul class="thread-list">
+        <li>slubby uneven yarns = character, not flaw.</li>
+        <li>indigo bleed is normal – first wash separate.</li>
+        <li>cinch back? vintage style, allows adjustment.</li>
+        <li>“Ruptura” vul. Kisialiova 19, basement level.</li>
+      </ul>
+      <div class="fabric-note mt-5">soak in vinegar water to set indigo first time.</div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 5 · leather -->
+  <section>
+    <h2>leather · bark tan</h2>
+    <img class="swatch-img" src="https://images.unsplash.com/photo-1647502191516-68a4f8c74ed4?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="vegetable tanned leather pieces">
+    <div class="img-tag">Italian veg‑tan · 2.5–3 mm</div>
+
+    <div class="cloth-card">
+      <h3>leather quality</h3>
+      <ul class="thread-list">
+        <li>temper: should be stiff but not cardboard.</li>
+        <li>flesh side: smooth suede-like or rough? both ok.</li>
+        <li>cutting: ask for bend or shoulder – firmer.</li>
+        <li>“Škura” pavilion, market Ushodni, stall 41.</li>
+      </ul>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 6 · silk -->
+  <section>
+    <h2>silk · mulberry / wild</h2>
+    <img class="swatch-img" src="https://images.unsplash.com/photo-1560506840-ec148e82a604?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="silk charmeuse in natural light">
+    <div class="img-tag">mulberry charmeuse 19 mm</div>
+
+    <div class="cloth-card">
+      <h3>real vs fake</h3>
+      <ul class="thread-list">
+        <li>ring test: pull silk through ring – real silk glides smoothly.</li>
+        <li>water test: drop water – real absorbs fast, synthetic beads.</li>
+        <li>lining: real silk is anti-static, cool in summer.</li>
+        <li>“Clothes for Friends” now has silk remnants box.</li>
+      </ul>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- 7 · mending / scraps -->
+  <section>
+    <h2>mending · cloth remnants</h2>
+    <img class="swatch-img" src="https://images.unsplash.com/photo-1451933371645-a3029668b979?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="mending tools and scraps">
+    <div class="img-tag">haberdashery “Zolka” new arrivals</div>
+
+    <div class="cloth-card">
+      <h3>keep these in your kit</h3>
+      <ul class="thread-list">
+        <li>speedweve or darning loom for jeans.</li>
+        <li>waxed thread (linen) for leather repairs.</li>
+        <li>fusible interfacing scraps – stabilise thin spots.</li>
+        <li>“Niki” vul. Kirava 25 — cheap mending corner.</li>
+      </ul>
+      <div class="bg-[#b5ad9a] p-4 mt-6 rounded-[80px_4px_80px_4px]">mend before you toss — three stitches save a garment.</div>
+    </div>
+  </section>
+
+  <!-- final advice (unchanged) -->
+  <div class="cloth-card border-4 border-[#a79079]">
+    <h3 class="text-4xl border-b-0">staple · quick reference</h3>
+    <div class="grid md:grid-cols-2 gap-6 text-lg">
+      <div>🧶 <span class="font-medium">hand:</span> rough = durable outerwear; smooth = next‑to‑skin.</div>
+      <div>🧺 <span class="font-medium">shrink:</span> natural fibres always shrink — buy slightly loose.</div>
+      <div>⚖️ <span class="font-medium">weight:</span> heavy = warm / structured; light = drapes / layers.</div>
+      <div>📍 <span class="font-medium">source:</span> local first — you can return, repair, trust.</div>
+    </div>
+  </div>
+
+  <!-- footer inside main -->
+  <div class="flex flex-wrap justify-between text-sm text-stone-700 mt-20 pt-6 border-t-4 border-[#bcaa93]">
+    <p>staple · thread & bolt · minsk fabric guide</p>
+    <p>tips from sewists, weavers, market dealers 2026</p>
+  </div>
+</main>
+
+<!-- footer outside -->
+<footer class="bg-[#405a48] py-16 text-center text-[#fcf5ea] w-full border-t-8 border-[#b39679] mt-10">
+  <p class="text-5xl font-thin">⏤  staple  ⏤</p>
+  <p class="text-xl mt-2 tracking-[.15em]">thread & bolt · know what you buy</p>
+</footer>
+
+<!-- cloudflare decoder (kept) -->
+<script>
+  (function(){
+      function decodeEmail(encodedString) {
+          var email = "", 
+              r = parseInt(encodedString.substr(0, 2), 16), 
+              n, i;
+          for (n = 2; encodedString.length - n; n += 2){
+              i = parseInt(encodedString.substr(n, 2), 16) ^ r;
+              email += String.fromCharCode(i);
+          }
+          return email;
+      }
+      var elements = document.querySelectorAll('.__cf_email__');
+      for (var i = 0; i < elements.length; i++) {
+          var el = elements[i];
+          var encoded = el.getAttribute('data-cfemail');
+          if (encoded) {
+              var decodedEmail = decodeEmail(encoded);
+              el.innerHTML = decodedEmail;
+              if (el.parentNode.tagName === 'A') {
+                  el.parentNode.href = "mailto:" + decodedEmail;
+              }
+          }
+      }
+  })();
+</script>
+</body>
+</html>
